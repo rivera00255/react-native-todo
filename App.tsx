@@ -1,118 +1,98 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
 import {
+  FlatList,
+  Pressable,
   SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
 } from 'react-native';
+import React, {useState} from 'react';
+import InputForm from './src/components/InputForm';
+import TodoItem from './src/components/TodoItem';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+export type Items = {
+  id: string;
+  task: string;
+  completed: boolean;
+};
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const App = () => {
+  const [todos, setTodos] = useState<Items[]>([]);
 
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const filterTodos = (completed: boolean) => {
+    if (completed) {
+      return todos.filter(todo => todo.completed === true);
+    }
+    if (!completed) {
+      return todos.filter(todo => todo.completed === false);
+    }
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="default" />
+      <Text style={styles.title}>ToDo</Text>
+      <InputForm todos={todos} setTodos={setTodos} />
+      <View style={styles.list}>
+        <Text>할 일</Text>
+        {todos.length > 0 && (
+          <FlatList
+            data={filterTodos(false)}
+            renderItem={({item}) => (
+              <TodoItem item={item} todos={todos} setTodos={setTodos} />
+            )}
+            keyExtractor={item => item.id}
+          />
+        )}
+      </View>
+      <View style={styles.list}>
+        <Text>완료된 일</Text>
+        {todos.length > 0 && (
+          <FlatList
+            data={filterTodos(true)}
+            renderItem={({item}) => (
+              <TodoItem item={item} todos={todos} setTodos={setTodos} />
+            )}
+            keyExtractor={item => item.id}
+          />
+        )}
+      </View>
+      <View style={styles.buttonWrapper}>
+        <Pressable onPress={() => setTodos([])} style={styles.button}>
+          <Text>reset</Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+};
 
 export default App;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 32,
+    marginHorizontal: 20,
+    marginTop: 20,
+    fontWeight: '700',
+  },
+  list: {
+    flex: 1,
+    padding: 20,
+  },
+  buttonWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    marginVertical: 20,
+    borderColor: '#d4d4d4',
+    borderWidth: 2,
+    padding: 5,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+  },
+});
