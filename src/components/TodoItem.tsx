@@ -1,6 +1,6 @@
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import React, {Dispatch, SetStateAction} from 'react';
-import {Items} from '../../App';
+import {Items} from '../screens/Todos';
 
 const TodoItem = ({
   item,

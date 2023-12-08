@@ -7,7 +7,7 @@ import {
   TextInput,
 } from 'react-native';
 import React, {Dispatch, SetStateAction, useState} from 'react';
-import {Items} from '../../App';
+import {Items} from '../screens/Todos';
 
 const generateId = () => {
   return Date.now().toString();
